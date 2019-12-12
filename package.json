@@ -1,0 +1,19 @@
+{
+  "name": "ssl-tournaments-bot",
+  "version": "1.0.0",
+  "description": "A tournament bot for ShellShock Live.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxiEurope/ssl-tournaments-bot.git"
+  },
+  "author": "maxi#7777",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MaxiEurope/ssl-tournaments-bot/issues"
+  },
+  "homepage": "https://github.com/MaxiEurope/ssl-tournaments-bot#readme"
+}

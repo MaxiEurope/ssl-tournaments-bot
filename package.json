@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/MaxiEurope/ssl-tournaments-bot/issues"
   },
-  "homepage": "https://github.com/MaxiEurope/ssl-tournaments-bot#readme"
+  "homepage": "https://github.com/MaxiEurope/ssl-tournaments-bot#readme",
+  "dependencies": {
+    "letter-count": "^2.8.9"
+  }
 }

@@ -1,5 +1,6 @@
 const Discord = require('discord.js'); // discord.js module
 const Guild = require('../util/mongo/guildConfig.js'); // guild config
+const lettercount = require('letter-count'); // another module - counting characters
 
 module.exports = {
     name: 'config',
@@ -29,7 +30,7 @@ module.exports = {
                 if (message.author.id !== '393096318123245578' || !guild.staff.includes(message.author.id)) return; // stop here if the user isn't maxi#7777 or one of the staff members
 
                 if (!args.length) { // no arguments given
-                    configMessage(guild, bot, message, Discord);
+                    return configMessage(guild, bot, message, Discord);
                 } else {
                     /** the mess begins.. */
                     let type = args[0].toLowerCase();
@@ -122,6 +123,36 @@ module.exports = {
                         }else{
                             return infoStaff(message, guild, bot);
                         }
+                    }else if(type === 'join'){
+                        let text = args.slice(1).join(' ');
+                        if(!text){
+                            return message.channel.send('ℹ️ **Text variables for the welcome message**\n'+
+                            '**[user]** - mentions the joined user\n'+
+                            '**[server]** - server name\n'+
+                            '**[members]** - outputs the current member count in the server\n\n'+
+                            `__Example:__ \`Hey [user], welcome to **[server]**. You are the [members]. member!\` - will output: Hey <@${bot.user.id}>, welcome to **${message.guild.name}**. You are the ${message.guild.members.size}. member!`);
+                        }else{
+                            let count = lettercount.count(text).chars;
+                            if(count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
+                            guild.welcomeMessage = text;
+                            guild.save().catch(e => console.log(e));
+                        }
+                    }else if(type === 'leave'){
+                        let text = args.slice(1).join(' ');
+                        if(!text){
+                            return message.channel.send('ℹ️ **Text variables for the leave message**\n'+
+                            '**[user]** - outputs the username\n'+
+                            '**[server]** - server name\n'+
+                            '**[members]** - outputs the current member count in the server\n\n'+
+                            `__Example:__ \`Oh no [user], why did you leave **[server]**. You left [members] users behind.\` - will output: Oh no ${bot.user.tag}, why did you leave **${message.guild.name}**. You left ${message.guild.members.size} users behind.`);
+                        }else{
+                            let count = lettercount.count(text).chars;
+                            if(count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
+                            guild.welcomeMessage = text;
+                            guild.save().catch(e => console.log(e));
+                        }
+                    }else{
+                        return configMessage(guild, bot, message, Discord);
                     }
                 }
 

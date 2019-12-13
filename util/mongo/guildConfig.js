@@ -2,15 +2,14 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
     guildID: String,
-    welcomeBoolean: Boolean,
-    leaveBoolean: Boolean,
     welcomeMessage: String,
     leaveMessage: String,
     welcomeChannel: String,
     leaveChannel: String,
-    welcomeRoleBoolean: Boolean,
     welcomeRole: String,
-    logChannel: String
+    logChannel: String,
+    staffRole: String,
+    staff: Array
 })
 
 module.exports = mongoose.model('Guild', schema);

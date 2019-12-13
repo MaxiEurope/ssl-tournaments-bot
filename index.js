@@ -25,7 +25,6 @@ const Guild = require('./util/mongo/guildConfig.js'); // guild config
 
 /** other useful modules/variables */
 const fs = require('fs'); // built in filesystem
-let xpCooldowns = new Set(); // xp only once in a minute
 const cooldowns = new Discord.Collection(); // command cooldown
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js')); // all command files
 
@@ -63,10 +62,10 @@ bot.on('message', async message => {
     const commandName = args.shift().toLowerCase(); // this is the command name, ex.: -help (help is the command name in this case)
 
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    if(!command) return; // invalid command
+    if (!command) return; // invalid command
 
     /** command cooldowns - we don't need spamming users */
-    if(!cooldowns.has(command.name)){
+    if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
     }
 
@@ -104,73 +103,103 @@ bot.on('message', async message => {
 bot.on('guildMemberAdd', async member => {
 
     const _guild = member.guild; // the guild which the user joined
-    if(_guild.id === '650188697022496780'){ // if the guilds id is the ssl tournaments one
+    if (_guild.id === '650188697022496780') { // if the guilds id is the ssl tournaments one
         Guild.findOne({
             guildID: _guild.id
         }, async (err, guild) => {
-            if(err) throw err;
-            if(!guild){
+            if (err) throw err;
+            if (!guild) {
                 return; // no guild config found
-            }else{
+            } else {
                 /** info about the user */
                 try {
                     const welcomeUser = new Discord.RichEmbed() // info embed
-                    .setAuthor(member.user.tag, member.user.displayAvatarURL)
-                    .setDescription(`**${member.user} ${member.user.tag}** joined the server`)
-                    .setThumbnail(member.user.displayAvatarURL)
-                    .setColor('#00ff00')
-                    .setFooter(`ID: ${member.user.id}`)
-                    .setTimestamp();
+                        .setAuthor(member.user.tag, member.user.displayAvatarURL)
+                        .setDescription(`**${member.user} ${member.user.tag}** joined the server`)
+                        .setThumbnail(member.user.displayAvatarURL)
+                        .setColor('#00ff00')
+                        .setFooter(`ID: ${member.user.id}`)
+                        .setTimestamp();
                     bot.channels.get(guild.logChannel).send(welcomeUser); // send the info message
                 } catch (error) {
                     console.log(error); // oof, an error occured...
                 }
                 /** autorole management */
-                if(guild.welcomeRoleBoolean === true){ // if adding a role is allowed in the configs
-                    try{
-                        await member.addRole(guild.welcomeRole, `Autorole: ${member.user.tag} joined the server`); // add a role
-                        const welcomeRoleSuccess = new Discord.RichEmbed() // role found, no error
-                            .setAuthor(member.user.tag, member.user.displayAvatarURL)
-                            .setDescription(`**Autorole:** Gave ${member.user} the <@&${guild.welcomeRole}> role!`)
-                            .setColor('#00ff00')
-                            .setFooter(`ID: ${member.user.id}`)
-                            .setTimestamp();
-                            bot.channels.get(guild.logChannel).send(welcomeRoleSuccess); // send the log message
-                    }catch(e){
-                        try {
-                            const welcomeRoleError = new Discord.RichEmbed() // missing perms / error
+                try {
+                    await member.addRole(guild.welcomeRole, `Autorole: ${member.user.tag} joined the server`); // add a role
+                    const welcomeRoleSuccess = new Discord.RichEmbed() // role found, no error
+                        .setAuthor(member.user.tag, member.user.displayAvatarURL)
+                        .setDescription(`**Autorole:** Gave ${member.user} the <@&${guild.welcomeRole}> role!`)
+                        .setColor('#00ff00')
+                        .setFooter(`ID: ${member.user.id}`)
+                        .setTimestamp();
+                    bot.channels.get(guild.logChannel).send(welcomeRoleSuccess); // send the log message
+                } catch (e) {
+                    try {
+                        const welcomeRoleError = new Discord.RichEmbed() // missing perms / error
                             .setAuthor(member.user.tag, member.user.displayAvatarURL)
                             .setDescription(`**Error:** Failed to give ${member.user} the <@&${guild.welcomeRole}> role!\n${e.message}`)
                             .setColor('#ff0000')
                             .setFooter(`ID: ${member.user.id}`)
                             .setTimestamp();
-                            bot.channels.get(guild.logChannel).send(welcomeRoleError); // send the error to the logs
-                        } catch (_e) {
-                            console.log(`Log channel not found: ${_e}`); // no #logs channel found
-                        }
+                        bot.channels.get(guild.logChannel).send(welcomeRoleError); // send the error to the logs
+                    } catch (_e) {
+                        console.log(`Log channel not found: ${_e}`); // no #logs channel found
                     }
                 }
                 /** welcome message management */
-                if(guild.welcomeBoolean === true){
-                    let wChannel;
-                    try{
-                        wChannel = bot.channels.get(guild.welcomeChannel); // the welcome channel
-                    }catch(e){
-                        return; // no welcome channel found
-                    }
-                    if(guild.welcomeMessage === '') return; // welcome message is empty
-                    wChannel.send(guild.welcomeMessage);
+                let wChannel;
+                try {
+                    wChannel = bot.channels.get(guild.welcomeChannel); // the welcome channel
+                } catch (e) {
+                    return; // no welcome channel found
                 }
+                if (guild.welcomeMessage === '') return; // welcome message is empty
+                wChannel.send(guild.welcomeMessage);
             }
         });
-        
     }
-    
+
 });
 
 /** member left a guild event */
 bot.on('guildMemberRemove', async member => {
-    
+
+    const _guild = member.guild; // the guild which the user joined
+    if (_guild.id === '650188697022496780') { // if the guilds id is the ssl tournaments one
+        Guild.findOne({
+            guildID: _guild.id
+        }, async (err, guild) => {
+            if (err) throw err;
+            if (!guild) {
+                return; // no guild config found
+            } else {
+                /** info about the user */
+                try {
+                    const leaveUser = new Discord.RichEmbed() // info embed
+                        .setAuthor(member.user.tag, member.user.displayAvatarURL)
+                        .setDescription(`**${member.user} ${member.user.tag}** left the server`)
+                        .setThumbnail(member.user.displayAvatarURL)
+                        .setColor('#000000')
+                        .setFooter(`ID: ${member.user.id}`)
+                        .setTimestamp();
+                    bot.channels.get(guild.logChannel).send(leaveUser); // send the info message
+                } catch (error) {
+                    console.log(error); // oof, an error occured...
+                }
+                /** leave message management */
+                let lChannel;
+                try {
+                    lChannel = bot.channels.get(guild.leaveChannel); // the leave channel
+                } catch (e) {
+                    return; // no leave channel found
+                }
+                if (guild.leaveMessage === '') return; // leave message is empty
+                lChannel.send(guild.leaveMessage);
+            }
+        });
+    }
+
 });
 
 bot.login(process.env.TOKEN); // login the bot to the Discord API

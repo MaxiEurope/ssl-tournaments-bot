@@ -149,7 +149,7 @@ module.exports = {
                         } else {
                             let count = lettercount.count(text).chars;
                             if (count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
-                            guild.welcomeMessage = text;
+                            guild.leaveMessage = text;
                             guild.save().catch(e => console.log(e));
                             return message.channel.send('✅ **Successfully saved leave message**');
                         }

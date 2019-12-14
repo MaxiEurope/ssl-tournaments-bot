@@ -27,7 +27,8 @@ module.exports = {
                 return message.channel.send('✅ **Setup complete!**');
             } else { // we found the guilds database
 
-                if (message.author.id !== '393096318123245578' || !guild.staff.includes(message.author.id)) return; // stop here if the user isn't maxi#7777 or one of the staff members
+
+                if (!guild.staff.includes(message.author.id)) return; // stop here if the user isn't maxi#7777 or one of the staff members
 
                 if (!args.length) { // no arguments given
                     return configMessage(guild, bot, message, Discord);
@@ -89,15 +90,12 @@ module.exports = {
                             }
                         }
                     } else if (type === 'staff') {
-                        if (guild.staff.length === 0) {
-                            return infoStaff(message, guild, bot)
-                        }
-                        let method = args[1].toLowerCase();
-                        if(!method) return infoStaff(message, guild, bot);
-                        if(method === 'add'){
+                        let method = args[1];
+                        if (!method) return infoStaff(message, guild, bot);
+                        if (method.toLowerCase() === 'add') {
                             let id = args[2];
-                            if(!id) return message.channel.send('🚫 **Missing user ID** - user `-config staff add 393096318123245578` for example');
-                            if(guild.staff.indexOf(id) > -1) return message.channel.send('🚫 **User is already staff!**');
+                            if (!id) return message.channel.send('🚫 **Missing user ID** - user `-config staff add 393096318123245578` for example');
+                            if (guild.staff.indexOf(id) > -1) return message.channel.send('🚫 **User is already staff!**');
                             let user = '';
                             try {
                                 user = bot.users.get(id).tag;
@@ -107,10 +105,10 @@ module.exports = {
                             guild.staff.push(id);
                             guild.save().catch(e => console.log(e));
                             return message.channel.send(`✅ **Successfully added ${user} to staff list**`);
-                        }else if(method === 'remove'){
+                        } else if (method.toLowerCase() === 'remove') {
                             let id = args[2];
-                            if(!id) return message.channel.send('🚫 **Missing user ID** - user `-config staff remove 393096318123245578` for example');
-                            if(guild.staff.indexOf(id) === -1) return message.channel.send('🚫 **User is not staff!**');
+                            if (!id) return message.channel.send('🚫 **Missing user ID** - user `-config staff remove 393096318123245578` for example');
+                            if (guild.staff.indexOf(id) === -1) return message.channel.send('🚫 **User is not staff!**');
                             let user = '';
                             try {
                                 user = bot.users.get(id).tag;
@@ -120,38 +118,42 @@ module.exports = {
                             guild.staff.splice(guild.staff.indexOf(id), 1);
                             guild.save().catch(e => console.log(e));
                             return message.channel.send(`✅ **Successfully removed ${user} from staff list**`);
-                        }else{
+                        } else {
                             return infoStaff(message, guild, bot);
                         }
-                    }else if(type === 'join'){
+                    } else if (type === 'join') {
                         let text = args.slice(1).join(' ');
-                        if(!text){
-                            return message.channel.send('ℹ️ **Text variables for the welcome message**\n'+
-                            '**[user]** - mentions the joined user\n'+
-                            '**[server]** - server name\n'+
-                            '**[members]** - outputs the current member count in the server\n\n'+
-                            `__Example:__ \`Hey [user], welcome to **[server]**. You are the [members]. member!\` - will output: Hey <@${bot.user.id}>, welcome to **${message.guild.name}**. You are the ${message.guild.members.size}. member!`);
-                        }else{
+                        if (!text) {
+                            return message.channel.send('ℹ️ **Text variables for the welcome message**\n' +
+                                '**[user]** - mentions the joined user\n' +
+                                '**[server]** - server name\n' +
+                                '**[members]** - outputs the current member count in the server\n\n' +
+                                `__Example:__ \`Hey [user], welcome to **[server]**. You are the [members]. member!\` - will output: Hey <@${bot.user.id}>, welcome to **${message.guild.name}**. You are the ${message.guild.members.size}. member!\n\n` +
+                                `**Current welcome message:**\n\`\`\`\n${guild.welcomeMessage}\`\`\``);
+                        } else {
                             let count = lettercount.count(text).chars;
-                            if(count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
+                            if (count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
                             guild.welcomeMessage = text;
                             guild.save().catch(e => console.log(e));
+                            return message.channel.send('✅ **Successfully saved welcome message**');
                         }
-                    }else if(type === 'leave'){
+                    } else if (type === 'leave') {
                         let text = args.slice(1).join(' ');
-                        if(!text){
-                            return message.channel.send('ℹ️ **Text variables for the leave message**\n'+
-                            '**[user]** - outputs the username\n'+
-                            '**[server]** - server name\n'+
-                            '**[members]** - outputs the current member count in the server\n\n'+
-                            `__Example:__ \`Oh no [user], why did you leave **[server]**. You left [members] users behind.\` - will output: Oh no ${bot.user.tag}, why did you leave **${message.guild.name}**. You left ${message.guild.members.size} users behind.`);
-                        }else{
+                        if (!text) {
+                            return message.channel.send('ℹ️ **Text variables for the leave message**\n' +
+                                '**[user]** - outputs the username\n' +
+                                '**[server]** - server name\n' +
+                                '**[members]** - outputs the current member count in the server\n\n' +
+                                `__Example:__ \`Oh no [user], why did you leave **[server]**. You left [members] users behind.\` - will output: Oh no ${bot.user.tag}, why did you leave **${message.guild.name}**. You left ${message.guild.members.size} users behind.\n\n` +
+                                `**Current leave message:**\n\`\`\`\n${guild.leaveMessage}\`\`\``);
+                        } else {
                             let count = lettercount.count(text).chars;
-                            if(count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
+                            if (count > 900) return message.channel.send('🚫 **Too many characters, max. is 900**');
                             guild.welcomeMessage = text;
                             guild.save().catch(e => console.log(e));
+                            return message.channel.send('✅ **Successfully saved leave message**');
                         }
-                    }else{
+                    } else {
                         return configMessage(guild, bot, message, Discord);
                     }
                 }
@@ -166,16 +168,16 @@ function configMessage(guild, bot, message, Discord) {
 
     const embed = new Discord.RichEmbed()
         .setAuthor('Server config', bot.user.displayAvatarURL)
-    let welcome_channel = guild.welcomeChannel !== '' ? `<#${guild.welcomeChannel}> - you can change the welcome channel with: \`-config wchannel #channel\`` : 'set a welcome channel with: `-config wchannel #channel`';
-    let leave_channel = guild.leaveChannel !== '' ? `<#${guild.leaveChannel}> - you can change the leave channel with: \`-config lchannel #channel\`` : 'set a leave channel with: `-config lchannel #channel`';
+    let welcome_channel = guild.welcomeChannel !== '' ? `<#${guild.welcomeChannel}> - change it with: \`-config wchannel #channel\`` : 'set a welcome channel with: `-config wchannel #channel`';
+    let leave_channel = guild.leaveChannel !== '' ? `<#${guild.leaveChannel}> - change it with: \`-config lchannel #channel\`` : 'set a leave channel with: `-config lchannel #channel`';
     embed.addField('Welcome channel', welcome_channel, true);
     embed.addField('Leave channel', leave_channel, true);
     /** welcome role */
-    let welcome_role = guild.welcomeRole !== '' ? `<@&${guild.welcomeRole}> - you can change the role which will be added on user join with: \`-config role ID\`` : 'set a role which will be added when a user joins this server with: `-config role ID`';
+    let welcome_role = guild.welcomeRole !== '' ? `<@&${guild.welcomeRole}> - change the role with: \`-config role ID\`` : 'set a role which will be added when a user joins this server with: `-config role ID`';
     embed.addField('Role added on user join', welcome_role);
-    let log_channel = guild.logChannel !== '' ? `<#${guild.logChannel}> - you can change the logs channel with: \`-config logs #channel\`` : 'set the log channel with: `-config logs #channel`';
+    let log_channel = guild.logChannel !== '' ? `<#${guild.logChannel}> - change the logs channel with: \`-config logs #channel\`` : 'set the log channel with: `-config logs #channel`';
     embed.addField('Logs channel', log_channel);
-    let staff_role = guild.staffRole !== '' ? `<@&${guild.staffRole}> - you can change the staff role with: \`-config staffrole ID\`` : 'set the staff role with: `-config staffrole ID`';
+    let staff_role = guild.staffRole !== '' ? `<@&${guild.staffRole}> - change the staff role with: \`-config staffrole ID\`` : 'set the staff role with: `-config staffrole ID`';
     embed.addField('Staff role', staff_role);
     let staff = '';
     if (guild.staff.length !== 0) {

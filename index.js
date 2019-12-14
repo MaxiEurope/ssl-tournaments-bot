@@ -155,7 +155,9 @@ bot.on('guildMemberAdd', async member => {
                     return; // no welcome channel found
                 }
                 if (guild.welcomeMessage === '') return; // welcome message is empty
-                wChannel.send(guild.welcomeMessage);
+                let wm = guild.welcomeMessage;
+                wm = wm.replace('[user]', member.user).replace('[server]', _guild.name).replace('[members]', _guild.members.size);
+                wChannel.send(wm);
             }
         });
     }
@@ -195,7 +197,9 @@ bot.on('guildMemberRemove', async member => {
                     return; // no leave channel found
                 }
                 if (guild.leaveMessage === '') return; // leave message is empty
-                lChannel.send(guild.leaveMessage);
+                let lm = guild.leaveMessage;
+                lm = lm.replace('[user]', member.user.tag).replace('[server]', _guild.name).replace('[members]', _guild.members.size);
+                lChannel.send(lm);
             }
         });
     }

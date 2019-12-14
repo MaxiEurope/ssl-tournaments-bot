@@ -21,6 +21,7 @@
   "homepage": "https://github.com/MaxiEurope/ssl-tournaments-bot#readme",
   "dependencies": {
     "discord.js": "^11.5.1",
+    "dotenv": "^8.2.0",
     "letter-count": "^2.8.9",
     "mongoose": "^5.8.1"
   }

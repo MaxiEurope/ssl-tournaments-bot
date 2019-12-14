@@ -4,7 +4,10 @@
   "description": "A tournament bot for ShellShock Live.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ."
+  },
+  "engines": {
+    "node": "11.4.0"
   },
   "repository": {
     "type": "git",
@@ -17,6 +20,8 @@
   },
   "homepage": "https://github.com/MaxiEurope/ssl-tournaments-bot#readme",
   "dependencies": {
-    "letter-count": "^2.8.9"
+    "discord.js": "^11.5.1",
+    "letter-count": "^2.8.9",
+    "mongoose": "^5.8.1"
   }
 }
